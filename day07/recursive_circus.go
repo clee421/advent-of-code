@@ -22,8 +22,8 @@ func main() {
 		panic(err)
 	}
 
-	// A set of supports
-	setSupport := make(map[string][]string)
+	// A map of supports to their standees
+	mapSupport := make(map[string][]string)
 
 	// A set of peaple that stand on supports
 	setStand := make(map[string]bool)
@@ -41,7 +41,7 @@ func main() {
 
 		// only lines that are supporting people are recorded
 		if support != "" {
-			setSupport[support] = stand
+			mapSupport[support] = stand
 
 			for _, s := range stand {
 				setStand[s] = true
@@ -55,7 +55,7 @@ func main() {
 	root := "nobody"
 	// The support at the root of this tree is the
 	// supporter that is not a stander
-	for k := range setSupport {
+	for k := range mapSupport {
 		if !setStand[k] {
 			root = k
 			break
@@ -64,7 +64,7 @@ func main() {
 
 	fmt.Println("This root supporter is", root)
 
-	name, weight, _ := findOffWeightProgram(root, &setSupport, &setProgram)
+	name, weight, _ := findOffWeightProgram(root, &mapSupport, &setProgram)
 	fmt.Println("Program", name, "needs to be", weight)
 }
 
