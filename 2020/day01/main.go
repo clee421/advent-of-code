@@ -9,11 +9,29 @@ import (
 
 func main() {
 	nums := readFile("./input.data")
-	result := solve(nums, 2020)
-	fmt.Println("Result is:", result)
+	result := twoSum(nums, 2020)
+	fmt.Println("Two sum result is:", result)
+
+	result = threeSum(nums, 2020)
+	fmt.Println("Three sum result is:", result)
 }
 
-func solve(nums []int, target int) int {
+func threeSum(nums []int, target int) int {
+	for i, n := range nums {
+		newTarget := target - n
+		newNums := append(nums[:i], nums[i+1:]...)
+
+		res := twoSum(newNums, newTarget)
+		if res > 0 {
+			fmt.Printf("%d + %d = %d\n", n, target-n, target)
+			return res * n
+		}
+	}
+
+	return 0
+}
+
+func twoSum(nums []int, target int) int {
 	seen := map[int]bool{}
 	for _, n := range nums {
 		diff := target - n
