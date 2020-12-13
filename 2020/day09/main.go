@@ -13,6 +13,48 @@ func main() {
 	result := findEncodeError(nums, 25)
 
 	fmt.Println("Encoding error:", result)
+
+	cs := findContiguousSet(nums, result)
+	w := findEncryptionWeakness(cs)
+	fmt.Println("Encryption weakness:", w)
+}
+
+func findEncryptionWeakness(nums []int) int {
+	min, max := nums[0], nums[0]
+	for _, n := range nums {
+		if n < min {
+			min = n
+		}
+
+		if n > max {
+			max = n
+		}
+	}
+
+	return min + max
+}
+
+func findContiguousSet(nums []int, target int) []int {
+	s, e := 0, 1
+	sum := nums[s] + nums[e]
+	for s <= e && e < len(nums) {
+		// fmt.Println("start:", s, "end:", e)
+		// fmt.Println("sum:", sum, "target:", target)
+
+		if sum == target {
+			return nums[s : e+1]
+		}
+
+		if sum > target {
+			sum -= nums[s]
+			s++
+		} else if sum < target {
+			e++
+			sum += nums[e]
+		}
+	}
+
+	return []int{}
 }
 
 func findEncodeError(list []int, preamble int) int {
