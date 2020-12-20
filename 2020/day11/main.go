@@ -11,20 +11,36 @@ func main() {
 
 	grid := parseData(r)
 	result1 := solve1(grid)
-	fmt.Println("Total seats", result1)
+	fmt.Println("Total seats solve1:", result1)
+
+	result2 := solve2(grid)
+	fmt.Println("Total seats solve2:", result2)
 }
 
 func solve1(data [][]byte) int {
+	newData := simulate(data)
+
+	// rounds := 0
+	for !isEqual(newData, data) {
+		// rounds++
+		data = newData
+		newData = simulate(newData)
+	}
+
+	// fmt.Println("solve 1 took", rounds, "rounds")
+	return countSeats(newData)
+}
+
+func solve2(data [][]byte) int {
 	newData := simulate(data)
 
 	rounds := 0
 	for !isEqual(newData, data) {
 		rounds++
 		data = newData
-		newData = simulate(newData)
+		newData = simulate2(newData)
 	}
 
-	fmt.Println("solve 1 took", rounds, "rounds")
 	return countSeats(newData)
 }
 
@@ -42,6 +58,21 @@ func simulate(data [][]byte) [][]byte {
 		row := []byte{}
 		for j := range data[i] {
 			state := calculateNewState(data, i, j)
+			row = append(row, state)
+		}
+
+		nd = append(nd, row)
+	}
+
+	return nd
+}
+
+func simulate2(data [][]byte) [][]byte {
+	nd := [][]byte{}
+	for i := range data {
+		row := []byte{}
+		for j := range data[i] {
+			state := calculateNewState2(data, i, j)
 			row = append(row, state)
 		}
 
@@ -88,6 +119,59 @@ func calculateNewState(grid [][]byte, x int, y int) byte {
 	}
 
 	if grid[x][y] == '#' && occupied >= 4 {
+		return 'L'
+	}
+
+	return grid[x][y]
+}
+
+func calculateNewState2(grid [][]byte, x int, y int) byte {
+	directions := [][]int{
+		[]int{-1, -1},
+		[]int{-1, 0},
+		[]int{-1, 1},
+		[]int{0, -1},
+		[]int{0, 1},
+		[]int{1, 1},
+		[]int{1, 0},
+		[]int{1, -1},
+	}
+
+	empty := 0
+	occupied := 0
+	for _, d := range directions {
+
+		validMove := true
+		nx, ny := x, y
+		for validMove {
+			nx, ny = d[0]+nx, d[1]+ny
+
+			validXMove := 0 <= nx && nx < len(grid)
+			validYMove := validXMove && 0 <= ny && ny < len(grid[nx])
+			validMove = validXMove && validYMove
+
+			if validMove && grid[nx][ny] != '.' {
+				break
+			}
+		}
+
+		if !validMove {
+			continue
+		}
+
+		switch grid[nx][ny] {
+		case 'L':
+			empty++
+		case '#':
+			occupied++
+		}
+	}
+
+	if grid[x][y] == 'L' && occupied == 0 {
+		return '#'
+	}
+
+	if grid[x][y] == '#' && occupied >= 5 {
 		return 'L'
 	}
 
