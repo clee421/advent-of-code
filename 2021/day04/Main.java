@@ -10,6 +10,28 @@ public class Main {
     var data = parseInput(lines);
 
     int result = 0;
+
+    // PART1
+    // for (int i = 0; i < data.draws.length; i++) {
+    //   boolean hasWon = false;
+    //   var mark = data.draws[i];
+    //   for (int j = 0; j < data.boards.size(); j++) {
+    //     var currBoard = data.boards.elementAt(j);
+    //     currBoard.mark(mark);
+    //     if (currBoard.isBingo()) {
+    //       System.out.println("A board won with: " + mark);
+    //       var score = currBoard.score();
+    //       result = score * Integer.parseInt(mark);
+    //       hasWon = true;
+    //       break;
+    //     }
+    //   }
+
+    //   if (hasWon) {
+    //     break;
+    //   }
+    // }
+
     for (int i = 0; i < data.draws.length; i++) {
       boolean hasWon = false;
       var mark = data.draws[i];
@@ -18,10 +40,19 @@ public class Main {
         currBoard.mark(mark);
         if (currBoard.isBingo()) {
           System.out.println("A board won with: " + mark);
-          var score = currBoard.score();
-          result = score * Integer.parseInt(mark);
-          hasWon = true;
-          break;
+
+          if (data.boards.size() > 1) {
+            System.out.println("Remove board at index" + j);
+            data.boards.remove(j);
+            // redo this number again
+            j--;
+          } else {
+            System.out.println("Last board remaining so calculating score");
+            var score = currBoard.score();
+            result = score * Integer.parseInt(mark);
+            hasWon = true;
+            break;
+          }
         }
       }
 
@@ -138,21 +169,25 @@ class Board {
   public int score() {
     int sum = 0;
     for (int row = 0; row < seen.length; row++) {
-      // String rowOutput = "";
+      String rowOutput = "";
       for (int col = 0; col < seen[row].length; col++) {
         if (!seen[row][col]) {
           sum += Integer.parseInt(board[row][col]);
           // System.out.println(sum);
         }
 
-        // if (seen[row][col]) {
-        //   rowOutput += "true  ";
-        // } else {
-        //   rowOutput += "false ";
-        // }
+        String n = board[row][col];
+        if (Integer.parseInt(board[row][col]) < 10) {
+          n = " " + n;
+        }
+        if (seen[row][col]) {
+          rowOutput += n + "* ";
+        } else {
+          rowOutput += n + "^ ";
+        }
       }
 
-      // System.out.println(rowOutput);
+      System.out.println(rowOutput);
     }
 
     return sum;
