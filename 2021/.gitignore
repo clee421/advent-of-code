@@ -1,2 +1,7 @@
 # Java class binaries
 *.class
+
+data-input
+data-test
+input-data
+input-test
