@@ -2,6 +2,6 @@
 *.class
 
 data-input
-data-test
+data-test*
 input-data
-input-test
+input-test*
