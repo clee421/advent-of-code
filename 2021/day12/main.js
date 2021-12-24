@@ -1,7 +1,7 @@
 const fs = require('fs')
 
 async function main() {
-  const rawData = fs.readFileSync('./data-test3', 'utf-8');
+  const rawData = fs.readFileSync('./data-input', 'utf-8');
   const inputs = rawData.split('\n').map(d => {
     return d.trim()
   })
@@ -65,6 +65,18 @@ function bfs(start, graph) {
   return paths
 }
 
+/**
+ * Part two is poorly explained. Why is start,A,b,d,b,A,c,A,c,A,end not an accepted path?
+ * It fits all criterias of the problem:
+ * Distince path from start to end
+ * Visits the large caves a limitless number of times
+ * Visits the small cave at most twice
+ *
+ * Saw a post on reddit
+ * https://www.reddit.com/r/adventofcode/comments/rehj2r/comment/hpunqyk/?utm_source=share&utm_medium=web2x&context=3
+ *
+ * you can visit ONE cave at most twice. fuck you AOC
+ */
 function bfs2(start, graph) {
   // console.log('graph', graph)
   const paths = []
@@ -73,8 +85,10 @@ function bfs2(start, graph) {
     seen: {},
   }]
 
+  let iterations = 0
+  let mods = 1000
   while (queue.length > 0) {
-    const {currentPath, seen, parent} = queue.shift()
+    const {currentPath, seen, twiceSeen} = queue.shift()
 
     const lastPosition = currentPath[currentPath.length - 1]
 
@@ -83,21 +97,20 @@ function bfs2(start, graph) {
       continue
     }
 
-    let grandParent = null
-    if (currentPath.length > 1) {
-      grandParent = currentPath[currentPath.length - 2]
+    if (iterations % mods === 0) {
+      if (iterations > mods * 10) {
+        mods *= 10
+      }
+      console.log(iterations, 'currentPath', currentPath.join('-'))
     }
 
     const children = graph[lastPosition] || []
     for (let i = 0; i < children.length; i++) {
+      let haveSeenTwice = twiceSeen ?? false;
       const child = children[i]
       const isLowercase = child.toLowerCase() === child
 
-      // if (isLowercase && child === grandParent) {
-      //   continue
-      // }
-
-      if (!seen[child] || seen[child] < 2) {
+      if (!seen[child] || (!twiceSeen && seen[child] < 2)) {
         const cloneSeen = {...seen}
 
         if (!cloneSeen[child]) {
@@ -106,15 +119,21 @@ function bfs2(start, graph) {
 
         if (isLowercase) {
           cloneSeen[child] += 1
+          if (cloneSeen[child] > 1) {
+            // console.log('hmmm')
+            haveSeenTwice = true
+          }
         }
 
         queue.push({
           currentPath: [...currentPath, child],
           seen: cloneSeen,
-          // parent: lastPosition,
+          twiceSeen: haveSeenTwice,
         })
       }
     }
+
+    iterations++
   }
 
   return paths
