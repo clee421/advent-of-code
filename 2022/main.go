@@ -2,6 +2,7 @@ package main
 
 import (
 	"aoc/2022/day01"
+	"aoc/2022/day02"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -18,6 +19,8 @@ func main() {
 	switch day {
 	case "day01":
 		Day01(part)
+	case "day02":
+		Day02(part)
 	default:
 		fmt.Printf("Unrecognized day: %s", day)
 	}
@@ -29,6 +32,15 @@ func Day01(part string) {
 		day01.RunPart1(lines)
 	} else {
 		day01.RunPart2(lines)
+	}
+}
+
+func Day02(part string) {
+	lines := readFile("./day02/input.txt")
+	if part == "part1" {
+		day02.RunPart1(lines)
+	} else {
+		day02.RunPart2(lines)
 	}
 }
 

@@ -1,6 +1,8 @@
 package template
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func RunPart1(lines []string) {
 	fmt.Println("hello world")
