@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+type Runner struct{}
+
 type Elf struct {
 	calories []int
 }
@@ -48,7 +50,11 @@ func max(a int, b int) int {
 	return b
 }
 
-func RunPart1(lines []string) {
+func CreateTask() *Runner {
+	return &Runner{}
+}
+
+func (r *Runner) RunPart1(lines []string) string {
 	elves := parse(lines)
 	largest := 0
 
@@ -56,10 +62,10 @@ func RunPart1(lines []string) {
 		largest = max(largest, elves[i].Total())
 	}
 
-	fmt.Println("Total calories:", largest)
+	return fmt.Sprint("Total calories:", largest)
 }
 
-func RunPart2(lines []string) {
+func (r *Runner) RunPart2(lines []string) string {
 	elves := parse(lines)
 	topN := []int{0, 0, 0}
 
@@ -80,5 +86,5 @@ func RunPart2(lines []string) {
 
 	largest := topN[0] + topN[1] + topN[2]
 
-	fmt.Println("Total calories:", largest)
+	return fmt.Sprint("Total calories:", largest)
 }

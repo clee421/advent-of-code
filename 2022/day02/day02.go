@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+type Runner struct{}
+
 type HandValue int
 type ResultValue int
 
@@ -166,22 +168,26 @@ func (r *ResultValue) Shoot() int {
 	return 0
 }
 
-func RunPart1(lines []string) {
+func CreateTask() *Runner {
+	return &Runner{}
+}
+
+func (r *Runner) RunPart1(lines []string) string {
 	opponentHands, myHands := parse(lines)
 	score := 0
 	for i := 0; i < len(opponentHands); i++ {
 		score = score + myHands[i].Value() + myHands[i].Shoot(&opponentHands[i])
 	}
 
-	fmt.Println("Score:", score)
+	return fmt.Sprint("Score:", score)
 }
 
-func RunPart2(lines []string) {
+func (r *Runner) RunPart2(lines []string) string {
 	hands, results := parse2(lines)
 	score := 0
 	for i := 0; i < len(hands); i++ {
 		score = score + hands[i].ValueOnResult(results[i]) + results[i].Shoot()
 	}
 
-	fmt.Println("Score:", score)
+	return fmt.Sprint("Score:", score)
 }
