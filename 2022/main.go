@@ -5,6 +5,7 @@ import (
 	"aoc/2022/day02"
 	"aoc/2022/day03"
 	"aoc/2022/day04"
+	"aoc/2022/day05"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -35,6 +36,7 @@ func main() {
 		"day02": {task: day02.CreateTask()},
 		"day03": {task: day03.CreateTask()},
 		"day04": {task: day04.CreateTask()},
+		"day05": {task: day05.CreateTask()},
 	}
 
 	daily, ok := packages[day]
