@@ -70,13 +70,15 @@ def run(day: str, part: str, args: List[str]):
     if part not in ["1", "2"]:
         raise Exception(f"The part {part} is not supported, run \"python main.py run {day} 1\"")
 
+    print(f"Importing run.py from day{day}.run")
     day_run = __import__(f"day{day}.run")
 
+    options = {}
     match part:
         case "1":
-            day_run.part_01(args)
+            day_run.part_01(args, options)
         case "2":
-            day_run.part_02(args)
+            day_run.part_02(args, options)
         case _:
             print("Not sure how we made it here")
 
