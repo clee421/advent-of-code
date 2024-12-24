@@ -67,7 +67,7 @@ def validate_x_mas(
 
     return True
 
-def parse_lines_grid(filepath: str) ->List[List[int]]:
+def parse_lines_grid(filepath: str) -> List[List[int]]:
     with open(filepath) as file:
         lines = [line.rstrip() for line in file]
 
