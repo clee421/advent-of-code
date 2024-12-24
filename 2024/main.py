@@ -74,6 +74,13 @@ def run(day: str, part: str, args: List[str]):
     day_run = __import__(f"day{day}.run")
 
     options = {}
+    maybe_input_type = args[0]
+    match maybe_input_type:
+        case "sample":
+            options["filepath"] = f"./day{day}/sample.txt"
+        case "input":
+            options["filepath"] = f"./day{day}/input.txt"
+
     match part:
         case "1":
             day_run.part_01(args, options)
@@ -81,6 +88,8 @@ def run(day: str, part: str, args: List[str]):
             day_run.part_02(args, options)
         case _:
             print("Not sure how we made it here")
+
+
 
 if __name__ == "__main__":
     main()
