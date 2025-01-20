@@ -80,6 +80,9 @@ def run(day: str, part: str, args: List[str]):
             options["filepath"] = f"./day{day}/sample.txt"
         case "input":
             options["filepath"] = f"./day{day}/input.txt"
+        case x if isinstance(x, str):
+            options["filepath"] = f"./day{day}/{maybe_input_type}"
+
 
     match part:
         case "1":
