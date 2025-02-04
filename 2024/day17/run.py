@@ -1,0 +1,103 @@
+import re
+from typing import Dict, List, Tuple
+
+def parse_inputs(filepath: str) -> Tuple[Dict[str, int], List[int]]:
+    with open(filepath) as file:
+        lines = [line.rstrip() for line in file]
+
+    registers = {}
+    program = []
+    is_parse_second_section = False
+    for l in lines:
+        if l == "":
+            is_parse_second_section = True
+            continue
+
+        if not is_parse_second_section:
+            result = re.search("^Register ([A|B|C])\\: (\\d+)$", l)
+            registers[result[1]] = int(result[2])
+        else:
+            program = list(map(lambda x: int(x), l.split(":")[1].strip().split(",")))
+
+    return (registers, program)
+
+def combo_operand(registers: Dict[str, int], op: int) -> int:
+    if op < 4:
+        return op
+    elif op == 4:
+        return registers["A"]
+    elif op == 5:
+        return registers["B"]
+    elif op == 6:
+        return registers["C"]
+    elif op == 7:
+        raise Exception("reserved and will not appear in valid programs")
+
+    raise Exception("something broke")
+
+def execute_program(registers: Dict[str, int], program:  List[int]) -> List[int]:
+    result = []
+    i = 0
+    opcode_override = None
+    while i < len(program):
+        opcode, operand = program[i], program[i+1]
+
+        # print(f"Iteration {i} / opcode_override {opcode_override}, running opcode: {opcode} / operand: {operand}")
+        match opcode:
+            case 0:
+                # adv
+                numerator = registers["A"]
+                denominator = 2**combo_operand(registers, operand)
+                registers["A"] = int(numerator / denominator)
+            case 1:
+                # bxl
+                registers["B"] = registers["B"] ^ operand
+            case 2:
+                # bst
+                registers["B"] = combo_operand(registers, operand) % 8
+            case 3:
+                # jnz
+                if registers["A"] != 0:
+                    opcode_override = operand
+            case 4:
+                # bxc
+                registers["B"] = registers["B"] ^ registers["C"]
+            case 5:
+                # out
+                o = combo_operand(registers, operand) % 8
+                result.append(o)
+            case 6:
+                # bdv
+                numerator = registers["A"]
+                denominator = 2**combo_operand(registers, operand)
+                registers["B"] = int(numerator / denominator)
+            case 7:
+                # cdv
+                numerator = registers["A"]
+                denominator = 2**combo_operand(registers, operand)
+                registers["C"] = int(numerator / denominator)
+
+        if opcode_override is None:
+            i += 2
+        else:
+            i = opcode_override
+            opcode_override = None
+
+
+    # print(registers)
+
+    return result
+
+def part_01(args: List[str], options: Dict[str, any]):
+    print("Running part 01", args, options)
+    inputs = parse_inputs(options.get("filepath", args[0]))
+    registers, program = inputs[0], inputs[1]
+
+    output = execute_program(registers, program)
+    print("Output", ",".join(list(map(lambda x: str(x), output))))
+
+def part_02(args: List[str], options: Dict[str, any]):
+    print("Running part 02", args, options)
+    inputs = parse_inputs(options.get("filepath", args[0]))
+
+    print("part 02")
