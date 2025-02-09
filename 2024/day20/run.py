@@ -171,8 +171,8 @@ def mark_distance_from_position(maze: List[List[str]], target: Tuple[int, int]) 
 """
 def get_distance_set(distance: int) -> Set[Tuple[int, int]]:
     dist_set = set()
-    for i in range(-distance, distance):
-        for j in range(-distance, distance):
+    for i in range(-distance, distance+1):
+        for j in range(-distance, distance+1):
             # d = Σ|A_i – B_i|
             # d = |x_1 - x_2| + |y_1 - y_2|
             d = abs(i) + abs(j)
@@ -272,23 +272,21 @@ def find_cheats_over_n_2(
     si, sj, ei, ej = 1, 1, len(marked_maze), len(marked_maze[0])
     for i in range(si, ei):
         for j in range(sj, ej):
-            if not isinstance(marked_maze[i][j], int):
+            if marked_maze[i][j] == "#":
                 continue
 
-            current_dist = marked_maze[i][j]
             for dist in dist_set:
                 x, y = i + dist[0], j + dist[1]
 
                 if x < 0 or x >= len(marked_maze) or y < 0 or y >= len(marked_maze[x]):
                     continue
 
-                if not isinstance(marked_maze[x][y], int):
+                if marked_maze[x][y] == "#":
                     continue
 
                 md = abs(dist[0]) + abs(dist[1])
-                end_dist = marked_maze[x][y]
 
-                saved_dist = end_dist - md - current_dist
+                saved_dist = marked_maze[x][y] - md - marked_maze[i][j]
                 if saved_dist >= n:
                     # if saved_dist >= 70:
                     #     print("curr", (i, j), "curr_value", marked_maze[i][j], "jump", dist, (x, y), "jump_val", marked_maze[x][y])
@@ -404,15 +402,15 @@ def part_02(args: List[str], options: Dict[str, any]):
     # dupe = mark_path(grid, path)
     # marked_maze = mark_distance_from_position(grid, end)
     marked_maze = mark_distance_from_position(grid, start)
-    # dist_set = get_distance_set(20)
+    dist_set = get_distance_set(20)
 
     cheat_saved = 100
     if args[0] == "sample":
         cheat_saved = 50
 
     # cheats = find_cheats_over_n(marked_maze, dist_set, paths[0], cheat_saved)
-    # cheats = find_cheats_over_n_2(marked_maze, dist_set, cheat_saved)
-    cheats = find_cheats_over_n_3(marked_maze, cheat_saved)
+    cheats = find_cheats_over_n_2(marked_maze, dist_set, cheat_saved)
+    # cheats = find_cheats_over_n_3(marked_maze, cheat_saved)
 
     super_saver_cheats = 0
     sorted_saved_steps = sorted(list(cheats.items()), key=lambda x: x[0])
