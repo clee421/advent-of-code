@@ -98,7 +98,7 @@ def create_map(grid: List[List[str]], positions: List[Tuple[int, int]]) -> Dict[
             end = positions[e_index]
             paths = get_all_possible_paths(grid, start, end)
 
-            min_path_length = 1000000
+            min_path_length = 10000000000
             for p in paths:
                 min_path_length = min(min_path_length, len(p))
             for p in paths:
@@ -298,6 +298,62 @@ def get_min_count_2(code: str, n: int, num_pad_map: Dict[str, Dict[str, str]], d
 
     return result
 
+def get_min_count_3(code: str, n: int, pad_map: Dict[str, Dict[str, List[str]]], memo: Dict[Tuple[str, int], int]) -> int:
+    if (code, n) in memo:
+        return memo[(code, n)]
+
+    if n == 0:
+        memo[(code, n)] = len(code)
+        return memo[(code, n)]
+
+    result = 0
+    for i in range(len(code)-1):
+        curr, going_to = code[i], code[i+1]
+        instructs = pad_map[curr][going_to]
+        local_min = []
+        for instruct in instructs:
+            if i == 0:
+                instruct = "A" + instruct
+            temp_min = get_min_count_3(instruct, n-1, pad_map, memo)
+            local_min.append(temp_min)
+
+        result += min(local_min)
+
+    memo[(code, n)] = result
+
+    return result
+
+def get_min_dpad_count_2(input: str, n: int, d_pad_map: Dict[str, Dict[str, List[str]]], memo: Dict[Tuple[str, int], int], d_pad_map_2) -> int:
+    if (input, n) in memo:
+        # print("found memo", input, n)
+        return memo[(input, n)]
+
+    if n == 1:
+        res = pad_instructions_2(input, d_pad_map_2)
+        memo[(input, n)] = len(res)
+        return memo[(input, n)]
+
+    result = 0
+    prev_instruct = None
+    for i in range(len(input)-1):
+        curr, going_to = input[i], input[i+1]
+        instructs = d_pad_map[curr][going_to]
+        local_min = None
+        for instruct in instructs:
+            if i == 0:
+                instruct = "A" + instruct
+            else:
+                instruct = prev_instruct[-1] + instruct
+            temp_min = get_min_dpad_count_2(instruct, n-1, d_pad_map, memo, d_pad_map_2)
+            if local_min is None or temp_min < local_min:
+                local_min = temp_min
+                prev_instruct = instruct
+
+        result += local_min
+
+    memo[(input, n)] = result
+
+    return result
 
 def part_01(args: List[str], options: Dict[str, any]):
     print("Running part 01", args, options)
@@ -329,31 +385,48 @@ def part_02(args: List[str], options: Dict[str, any]):
     print("Running part 02", args, options)
     inputs = parse_inputs(options.get("filepath", args[0]))
 
+    # keypad_dirs = create_dpad_map()
+    # print(keypad_dirs)
+
     num_pad_map = create_num_pad_map()
     d_pad_map = create_d_pad_map()
 
-    res = narrow_min_pad_maps(num_pad_map, d_pad_map)
-    num_pad_map_2, d_pad_map_2 = res[0], res[1]
+    a_merged = num_pad_map["A"] | d_pad_map["A"]
+    merged_pad_map = num_pad_map | d_pad_map
+    merged_pad_map["A"] = a_merged
 
-    # print("num_pad_map_2", num_pad_map_2)
-    # print("d_pad_map_2", d_pad_map_2)
-
-    layers = int(args[1]) if len(args) > 1 else 2
     total = 0
-    for input in inputs:
-        # count = get_min_count(input, layers, num_pad_map_2, d_pad_map_2)
-        count = get_min_count_2(input, layers, num_pad_map_2, d_pad_map, d_pad_map_2)
+    for code in inputs:
+        count = get_min_count_3("A" + code, 26, merged_pad_map, {})
 
-        instruct_sum = count * int(input[:-1])
-        print(f"length: {count} x value: {int(input[:-1])} = sum: {instruct_sum}")
+        instruct_sum = count * int(code[:-1])
+        print(f"length: {count} x value: {int(code[:-1])} = sum: {instruct_sum}")
         total += instruct_sum
 
     print(f"Total: {total}")
-    # 335078733882526 is too high
-    # 297448271134066 not correct
-    # 294209504640384
-    # 260987462148488 also not correct but better?
-    # 133860691755948 is too low
+
+    # res = narrow_min_pad_maps(num_pad_map, d_pad_map)
+    # num_pad_map_2, d_pad_map_2 = res[0], res[1]
+
+    # # print("num_pad_map_2", num_pad_map_2)
+    # # print("d_pad_map_2", d_pad_map_2)
+
+    # layers = int(args[1]) if len(args) > 1 else 2
+    # total = 0
+    # for input in inputs:
+    #     # count = get_min_count(input, layers, num_pad_map_2, d_pad_map_2)
+    #     count = get_min_count_2(input, layers, num_pad_map_2, d_pad_map, d_pad_map_2)
+
+    #     instruct_sum = count * int(input[:-1])
+    #     print(f"length: {count} x value: {int(input[:-1])} = sum: {instruct_sum}")
+    #     total += instruct_sum
+
+    # print(f"Total: {total}")
+    # # 335078733882526 is too high
+    # # 297448271134066 not correct
+    # # 294209504640384
+    # # 260987462148488 also not correct but better?
+    # # 133860691755948 is too low
 """
 
 length: 84539018430 x value: 805 = sum: 68053909836150
