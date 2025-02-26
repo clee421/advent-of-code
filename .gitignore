@@ -1,7 +1,7 @@
 __pycache__/
-2017/*/data.txt
-2017/*/input.txt
-2017/*/test.txt
-2017/*/output.txt
-2023/*/*.txt
-2024/*/*.txt
+2017/day*/data.txt
+2017/day*/input.txt
+2017/day*/test.txt
+2017/day*/output.txt
+2023/day*/*.txt
+2024/day*/*.txt
