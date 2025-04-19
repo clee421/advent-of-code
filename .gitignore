@@ -3,5 +3,7 @@ __pycache__/
 2017/day*/input.txt
 2017/day*/test.txt
 2017/day*/output.txt
+2022-go/day*/*.txt
+2022-python/day*/*.txt
 2023/day*/*.txt
 2024/day*/*.txt
