@@ -73,12 +73,18 @@ def run(day: str, part: str, args: List[str]):
     print(f"Importing run.py from day{day}.run")
     day_run = __import__(f"day{day}.run")
 
-    options = {}
+    options = {
+        "debug": False,
+    }
+
+    if "--debug" in args:
+        options["debug"] = True
+        args.remove("--debug")
+
     maybe_input_type = args[0]
     match maybe_input_type:
         case x if isinstance(x, str):
             options["filepath"] = f"./day{day}/{maybe_input_type}.txt"
-
 
     match part:
         case "1":
