@@ -33,6 +33,7 @@ class DSU:
         self.size[ra] += self.size[rb]
         return True
 
+
 def join_circuits(junction_boxes: List[Tuple[int, int, int]], connections: int) -> int:
     dsu = DSU(junction_boxes)
 
@@ -60,6 +61,30 @@ def join_circuits(junction_boxes: List[Tuple[int, int, int]], connections: int) 
         product *= s
     return product
 
+def calculate_last_two_circuits(junction_boxes: List[Tuple[int, int, int]]) -> int:
+    dsu = DSU(junction_boxes)
+
+    heap = []
+    n = len(junction_boxes)
+    for i in range(n):
+        for j in range(i + 1, n):
+            a, b = junction_boxes[i], junction_boxes[j]
+            heapq.heappush(heap, (dist(a, b), a, b))
+
+    components = n
+    last_edge: Tuple[Tuple[int, int, int], Tuple[int, int, int]] | None = None
+
+    while heap and components > 1:
+        _, a, b = heapq.heappop(heap)
+        if dsu.union(a, b):
+            components -= 1
+            last_edge = (a, b)
+
+    if last_edge:
+        return last_edge[0][0] * last_edge[1][0]
+
+    return -1
+
 def part_01(args: List[str], options: Dict[str, any]):
     print("Running part 01", args, options)
     junction_boxes = parse_inputs(options.get("filepath", args[0]))
@@ -73,12 +98,8 @@ def part_01(args: List[str], options: Dict[str, any]):
 
 
 def part_02(args: List[str], options: Dict[str, any]):
-    print("Running part 01", args, options)
+    print("Running part 02", args, options)
     junction_boxes = parse_inputs(options.get("filepath", args[0]))
 
-    connections = 1000
-    if args[0] == "sample":
-        connections = 10
-
-    product = join_circuits(junction_boxes, connections=connections)
-    print(f"Result: {product}")
+    result = calculate_last_two_circuits(junction_boxes)
+    print(f"Result: {result}")
